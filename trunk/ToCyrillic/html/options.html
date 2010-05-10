@@ -1,0 +1,55 @@
+<html>
+<head>
+<title>To Cyrillic Google Chrome Extension Setup</title>
+<script type="text/javascript">//<!--
+// Saves options to localStorage.
+function save_options() {
+  var select = document.getElementById("button");
+  var button = select.children[select.selectedIndex].value;
+  localStorage["tocyrillic.button"] = button;
+  // Update status to let user know options were saved.
+  var status = document.getElementById("status");
+  status.innerHTML = "Options Saved.";
+  setTimeout(function() {status.innerHTML = "";}, 750);
+}
+
+// Restores select box state to saved value from localStorage.
+function restore_options() {
+  var button = localStorage["tocyrillic.button"];
+  if (!button) {
+    return;
+  }
+  var select = document.getElementById("button");
+  for (var i = 0; i < select.children.length; i++) {
+    var child = select.children[i];
+    if (child.value == button) {
+      child.selected = "true";
+      break;
+    }
+  }
+}
+//-->
+</script>
+</head>
+
+<body onload="restore_options()">
+<img src="/images/icon.png"/>
+<h1>To Cyrillic Google Chrome Extension Setup</h1>
+<p id="status" style="color:gray"></p>
+<p>
+Cyrillic mode toggle key:
+<select id="button">
+ <option value="F2">F2</option>
+ <option value="F3">F3</option>
+ <option value="F4">F4</option>
+ <option value="F7">F7</option>
+ <option value="F8">F8</option>
+ <option value="F9">F9</option>
+ <option value="F10">F10</option>
+</select>
+</p>
+
+<button onclick="save_options()">Save</button>
+</body>
+</html>
+
