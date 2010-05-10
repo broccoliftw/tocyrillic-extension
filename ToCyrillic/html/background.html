@@ -1,0 +1,15 @@
+<html>
+<head>
+<script type="text/javascript">
+// send localStorage properties to requester
+chrome.extension.onRequest.addListener(	function(request, sender, sendResponse) {
+	if(request.action == "getProperties"){
+		sendResponse({"tocyrillic.button": localStorage["tocyrillic.button"]});
+	}
+	else{
+		sendResponse({});
+	}
+});
+</script>
+</head>
+</html>
