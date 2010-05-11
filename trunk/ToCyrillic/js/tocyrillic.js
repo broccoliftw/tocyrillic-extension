@@ -109,11 +109,14 @@ function keyDownListener(e){
 }
 function keyUpListener(e){
 	var input = e.target;
+	// skip non-text elements
 	if(!isTextElement(input)) return;
+	// skip backspace, delete etc.
+	if(e.keyCode < 48) return;
 	var toggleMode = input.getAttribute(TOGGLE_MODE_ATTR) == 'true';
 	var txt = getElementValue(input);
 	if(toggleMode && input.previous_value != txt){
-		toCyrillic(input,this.doc);
+		toCyrillic(input);
 		input.previous_value = getElementValue(input);
 	}
 }
