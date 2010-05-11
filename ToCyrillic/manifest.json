@@ -1,6 +1,6 @@
 {
   "name": "ToCyrillic",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "On the fly conversion from latin to cyrillic for text widgets.",
   "icons": {"16":"images/icon.png",
 	        "48":"images/icon48.png"},
