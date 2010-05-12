@@ -1,13 +1,14 @@
 {
   "name": "ToCyrillic",
-  "version": "1.0.2",
-  "description": "On the fly conversion from latin to cyrillic for text widgets.",
+  "version": "1.1.0",
+  "description": "__MSG_description__",
+  "default_locale": "en",
   "icons": {"16":"images/icon.png",
 	        "48":"images/icon48.png"},
   "options_page": "html/options.html",
   "background_page": "html/background.html",
   "content_scripts": [ { 
-    "matches": [ "http://*/*","https://*/*" ],
+    "matches": [ "file://*/*","http://*/*","https://*/*" ],
     "all_frames": true,
     "run_at": "document_end",
     "js": [ "js/data.js", "js/tocyrillic.js" ]

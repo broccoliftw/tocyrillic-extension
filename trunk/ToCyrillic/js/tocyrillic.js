@@ -12,19 +12,67 @@ var KEY_CODES = {
 };
 
 var toggleKeyCode = KEY_CODES["F2"];
-
-// since we heaven't access to localStorage, we'll get it by message passing
-chrome.extension.sendRequest({"action": "getProperties"}, function(response) {
-	if(response["tocyrillic.button"] && KEY_CODES[response["tocyrillic.button"]]){
-		toggleKeyCode = KEY_CODES[response["tocyrillic.button"]];
+var globalToggleEnabled = false;
+var globalToggleMode = false;
+// set globals from properties
+function acceptProperties(properties){
+	if(properties["tocyrillic.button"] && KEY_CODES[properties["tocyrillic.button"]]){
+		toggleKeyCode = KEY_CODES[properties["tocyrillic.button"]];
+	}
+	globalToggleEnabled = properties["tocyrillic.global"] == "true";
+	globalToggleMode = properties["tocyrillic.global.mode"] == "true";
+}
+// since we heaven't access to localStorage, we'll get properties by message passing
+chrome.extension.sendRequest({"action": "getProperties"}, function(response) { 
+	acceptProperties(response);
+	if(globalToggleEnabled && globalToggleMode){
+		showMessage("Global cyrillic mode enabled");
+	}
+});
+// listen for setProperties
+chrome.extension.onRequest.addListener(	function(request, sender, sendResponse) {
+	if(request.action == "setProperties"){
+		acceptProperties(request);
 	}
 });
 
 // functions
+function obj2str(o){
+	var res = '';
+	for(var k in o){
+		res += k + " = " + o[k] + "\n";
+	}
+	return res;
+}
 function print_obj(o){
 	for(var k in o){
 		console.log(k + " = " + o[k]);
 	}
+}
+// show message
+var messageElement;
+var messageHideTimer;
+function showMessage(message){
+	if(!messageElement){
+		messageElement = document.createElement('DIV');
+		messageElement.style.font = '12px arial,sans-serif';
+		messageElement.style.padding = '2px';
+		messageElement.style.color = '#444';
+		messageElement.style.backgroundColor = '#9e9';
+		messageElement.style.border = '1px solid '+messageElement.style.color;
+		messageElement.style.position = 'fixed';
+		messageElement.style.top = '1px';
+		messageElement.style.right = '1px';
+		document.body.appendChild(messageElement);
+	}
+	else{
+		messageElement.style.display = '';
+	}
+	messageElement.innerHTML = message;
+	if(messageHideTimer){
+		clearTimeout(messageHideTimer);
+	}
+	messageHideTimer = setTimeout(function() {messageElement.style.display = 'none';}, 1500);
 }
 // main function for translit -> cyrillic convert
 function toCyrillic(input){
@@ -84,18 +132,26 @@ var REGISTRED_ATTR = 'tocyrillic_registered';
 // listener functions
 function keyDownListener(e){
 	var input = e.target;
-	if(!isTextElement(input)) return;
 	var keyCode = e.keyCode;
-	var toggleMode = input.getAttribute(TOGGLE_MODE_ATTR) == 'true';
+	// support for global toggle mode
+	if(globalToggleEnabled && keyCode == toggleKeyCode){
+		globalToggleMode = !globalToggleMode;
+		// propagate global toggle mode to all
+		chrome.extension.sendRequest({"action": "propagateGlobalToggleMode", "tocyrillic.global.mode": globalToggleMode}, function(r){});
+		showMessage("Global cyrillic mode " + (globalToggleMode?'enabled':'disabled'));
+		return;
+	}
+	if(!isTextElement(input)) return;
+	var toggleMode = isCyrillicEnabledForElement(input);
 	// toggle mode
 	if(keyCode == toggleKeyCode){
 		if(toggleMode){
-			input.setAttribute(TOGGLE_MODE_ATTR, 'false');
+			setCyrillicEnabledForElement(input, false);
 			// restore style border
 			input.style.border = input.getAttribute(PREV_BORDER_ATTR);
 		}
 		else{
-			input.setAttribute(TOGGLE_MODE_ATTR, 'true');
+			setCyrillicEnabledForElement(input, true);
 			// store style border
 			input.setAttribute(PREV_BORDER_ATTR, input.style.border);
 			input.style.border = '2px #d77 dotted';
@@ -113,7 +169,7 @@ function keyUpListener(e){
 	if(!isTextElement(input)) return;
 	// skip backspace, delete etc.
 	if(e.keyCode < 48) return;
-	var toggleMode = input.getAttribute(TOGGLE_MODE_ATTR) == 'true';
+	var toggleMode = isCyrillicEnabledForElement(input);
 	var txt = getElementValue(input);
 	if(toggleMode && input.previous_value != txt){
 		toCyrillic(input);
@@ -121,6 +177,12 @@ function keyUpListener(e){
 	}
 }
 // element value wrappers
+function isCyrillicEnabledForElement(el){
+	return globalToggleMode || el.getAttribute(TOGGLE_MODE_ATTR) == 'true';
+}
+function setCyrillicEnabledForElement(el, enabled){
+	el.setAttribute(TOGGLE_MODE_ATTR, enabled?'true':'false');
+}
 function getElementValue(el){
 	if(isRichTextElement(el)) return el.innerHTML;
 	else return el.value;
