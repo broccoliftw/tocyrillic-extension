@@ -1,13 +1,14 @@
 <html>
 <head>
+<script src="/js/constants.js" type="text/javascript"></script>
 <script src="/js/utils.js" type="text/javascript"></script>
 <script type="text/javascript">
 function createResponse(action){
 	return {
 		"action": action,
-		"tocyrillic.button": localStorage["tocyrillic.button"],
-        "tocyrillic.global": localStorage["tocyrillic.global"],
-        "tocyrillic.global.mode": localStorage["tocyrillic.global.mode"]
+		PROPERTY_BUTTON: localStorage[PROPERTY_BUTTON],
+        PROPERTY_GLOBAL: localStorage[PROPERTY_GLOBAL],
+        PROPERTY_GLOBAL_MODE: localStorage[PROPERTY_GLOBAL_MODE]
     };
 }
 // send localStorage properties to requester
@@ -18,7 +19,7 @@ chrome.extension.onRequest.addListener(	function(request, sender, sendResponse) 
 	}
 	// accept global toggle mode and propagete it to all windows all tabs
 	else if(request.action == "propagateGlobalToggleMode"){
-		localStorage["tocyrillic.global.mode"] = request["tocyrillic.global.mode"];
+		localStorage[PROPERTY_GLOBAL_MODE] = request[PROPERTY_GLOBAL_MODE];
 		sendRequestToAllTabs(createResponse("setProperties"));
 	}
 });

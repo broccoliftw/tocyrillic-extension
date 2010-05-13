@@ -1,7 +1,7 @@
 <project default="build_all">
 	
 	<target name="create_zip">
-		<zip destfile="../ToCyrillic.zip" basedir="${basedir}" excludes=".*"/>
+		<zip destfile="../ToCyrillic.zip" basedir="${basedir}" excludes=".*,snapshots/**"/>
 	</target>
 	
 	<target name="build_all" depends="create_zip">

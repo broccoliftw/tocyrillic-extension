@@ -7,6 +7,7 @@ LAT['g'] = 'г';
 LAT['d'] = 'д';
 LAT['e'] = 'е';
 LAT['jo'] = 'ё';
+LAT['yo'] = 'ё';
 LAT['zh'] = 'ж';
 LAT['z'] = 'з';
 LAT['i'] = 'и';
@@ -24,15 +25,20 @@ LAT['u'] = 'у';
 LAT['f'] = 'ф';
 LAT['h'] = 'х';
 LAT['c'] = 'ц';
+LAT['tz'] = 'ц';
 LAT['ch'] = 'ч';
 LAT['sh'] = 'ш';
-LAT['w'] = 'щ';
+LAT['w'] = 'ш';
+LAT['shh'] = 'щ';
 LAT['#'] = 'ъ';
 LAT['y'] = 'ы';
 LAT['\''] = 'ь';
 LAT['je'] = 'э';
+LAT['ye'] = 'э';
 LAT['ju'] = 'ю';
+LAT['yu'] = 'ю';
 LAT['ja'] = 'я';
+LAT['ya'] = 'я';
 LAT['A'] = 'А';
 LAT['B'] = 'Б';
 LAT['V'] = 'В';
@@ -40,6 +46,7 @@ LAT['G'] = 'Г';
 LAT['D'] = 'Д';
 LAT['E'] = 'Е';
 LAT['Jo'] = 'Ё';
+LAT['Yo'] = 'Ё';
 LAT['Zh'] = 'Ж';
 LAT['Z'] = 'З';
 LAT['I'] = 'И';
@@ -57,18 +64,25 @@ LAT['U'] = 'У';
 LAT['F'] = 'Ф';
 LAT['H'] = 'Х';
 LAT['C'] = 'Ц';
+LAT['Tz'] = 'ц';
 LAT['Ch'] = 'Ч';
 LAT['Sh'] = 'Ш';
-LAT['W'] = 'Щ';
+LAT['Shh'] = 'Щ';
 LAT['##'] = 'Ъ';
 LAT['Y'] = 'Ы';
 LAT['\'\''] = 'Ь';
 LAT['Je'] = 'Э';
+LAT['Ye'] = 'Э';
 LAT['Ju'] = 'Ю';
+LAT['Yu'] = 'Ю';
 LAT['Ja'] = 'Я';
-
-CYR = {};
+LAT['Ya'] = 'Я';
+// reverse mapping
+CYR = [{},{},{},{}]
 for(key in LAT){
-  CYR[LAT[key]] = key;
+	for(var k in CYR){
+		if(!CYR[k][LAT[key]]){
+			CYR[k][LAT[key]] = key;
+		}
+	}
 }
-

@@ -16,11 +16,11 @@ var globalToggleEnabled = false;
 var globalToggleMode = false;
 // set globals from properties
 function acceptProperties(properties){
-	if(properties["tocyrillic.button"] && KEY_CODES[properties["tocyrillic.button"]]){
-		toggleKeyCode = KEY_CODES[properties["tocyrillic.button"]];
+	if(properties[PROPERTY_BUTTON] && KEY_CODES[properties[PROPERTY_BUTTON]]){
+		toggleKeyCode = KEY_CODES[properties[PROPERTY_BUTTON]];
 	}
-	globalToggleEnabled = properties["tocyrillic.global"] == "true";
-	globalToggleMode = properties["tocyrillic.global.mode"] == "true";
+	globalToggleEnabled = properties[PROPERTY_GLOBAL] == "true";
+	globalToggleMode = properties[PROPERTY_GLOBAL_MODE] == "true";
 }
 // since we heaven't access to localStorage, we'll get properties by message passing
 chrome.extension.sendRequest({"action": "getProperties"}, function(response) { 
@@ -96,10 +96,23 @@ function toCyrillic(input){
 	var offset = 0;
 	var cyr = '';
 	if(pos > 0){
-		var prevLat = CYR[txt.charAt(pos-1)];
-		if(prevLat){
-			var cyr = LAT[prevLat+chr];
-			if(cyr) offset = 1;
+		var prevChr = txt.charAt(pos-1);
+		if(prevChr == STOP_CONVERSION_CHAR){
+			offset = 1;
+		}
+		else{
+			for(var k in CYR){
+				// convert previous cyrillic char to latin
+				var prevLat = CYR[k][prevChr];
+				if(prevLat){
+					// check if previous+chr have mapping (like ch)
+					var cyr = LAT[prevLat+chr];
+					if(cyr){
+						offset = 1;
+						break;
+					}
+				}
+			}
 		}
 	}
 	if(!cyr) cyr = LAT[chr];
@@ -126,9 +139,6 @@ function toCyrillic(input){
 	}
 }
 
-var TOGGLE_MODE_ATTR = 'tocirillic_toggle_mode';
-var PREV_BORDER_ATTR = 'tocirillic_prev_border';
-var REGISTRED_ATTR = 'tocyrillic_registered';
 // listener functions
 function keyDownListener(e){
 	var input = e.target;
@@ -137,7 +147,7 @@ function keyDownListener(e){
 	if(globalToggleEnabled && keyCode == toggleKeyCode){
 		globalToggleMode = !globalToggleMode;
 		// propagate global toggle mode to all
-		chrome.extension.sendRequest({"action": "propagateGlobalToggleMode", "tocyrillic.global.mode": globalToggleMode}, function(r){});
+		chrome.extension.sendRequest({"action": "propagateGlobalToggleMode", PROPERTY_GLOBAL_MODE: globalToggleMode}, function(r){});
 		showMessage("Global cyrillic mode " + (globalToggleMode?'enabled':'disabled'));
 		return;
 	}
@@ -154,7 +164,7 @@ function keyDownListener(e){
 			setCyrillicEnabledForElement(input, true);
 			// store style border
 			input.setAttribute(PREV_BORDER_ATTR, input.style.border);
-			input.style.border = '2px #d77 dotted';
+			input.style.border = TOGGLE_BORDER_STYLE;
 		}
 		// prevents key up listener 
 		input.previous_value = getElementValue(input);
