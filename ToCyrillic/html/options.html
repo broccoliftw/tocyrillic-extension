@@ -11,6 +11,9 @@ function save_options() {
   // update storage
   localStorage["tocyrillic.button"] = button;
   localStorage["tocyrillic.global"] = global;
+  if(!global){
+	  localStorage["tocyrillic.global.mode"] = false;
+  }
   // propagate properties
   sendRequestToAllTabs(createResponse("setProperties"));
   // Update status to let user know options were saved.
