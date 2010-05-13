@@ -178,7 +178,12 @@ function keyUpListener(e){
 }
 // element value wrappers
 function isCyrillicEnabledForElement(el){
-	return globalToggleMode || el.getAttribute(TOGGLE_MODE_ATTR) == 'true';
+	if(globalToggleEnabled){
+		return globalToggleMode;
+	}
+	else{
+		return el.getAttribute(TOGGLE_MODE_ATTR) == 'true';
+	}
 }
 function setCyrillicEnabledForElement(el, enabled){
 	el.setAttribute(TOGGLE_MODE_ATTR, enabled?'true':'false');
