@@ -35,6 +35,12 @@ chrome.extension.onRequest.addListener(	function(request, sender, sendResponse) 
 		acceptProperties(request);
 	}
 });
+// propagate global toggle mode to all
+function propagateGlobalToggleMode(){
+	var request = {"action": "propagateGlobalToggleMode"};
+	request[PROPERTY_GLOBAL_MODE] = globalToggleMode;
+	chrome.extension.sendRequest(request, function(r){});
+}
 
 // functions
 function obj2str(o){
@@ -146,8 +152,7 @@ function keyDownListener(e){
 	// support for global toggle mode
 	if(globalToggleEnabled && keyCode == toggleKeyCode){
 		globalToggleMode = !globalToggleMode;
-		// propagate global toggle mode to all
-		chrome.extension.sendRequest({"action": "propagateGlobalToggleMode", PROPERTY_GLOBAL_MODE: globalToggleMode}, function(r){});
+		propagateGlobalToggleMode();
 		showMessage("Global cyrillic mode " + (globalToggleMode?'enabled':'disabled'));
 		return;
 	}
