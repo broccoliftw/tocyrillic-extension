@@ -249,9 +249,7 @@ function registerIFrames(){
 		}
 	}
 }
-
 console.log("tocyrillic started");
 registerGlobalListeners(document);
-// TODO replace timer by on create event if possible
 setTimeout(function(){setInterval(registerIFrames, 2000);}, 2000);
 

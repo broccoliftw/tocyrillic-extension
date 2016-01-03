@@ -1,4 +1,4 @@
-// conversion tables
+// conversion tables latin to cyrillic
 var LAT = {};
 LAT['a'] = 'а';
 LAT['b'] = 'б';
